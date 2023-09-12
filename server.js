@@ -3,7 +3,9 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 const app = express();
-const PORT = 3000;
+
+// Use the PORT from environment variable or fallback to 3000
+const PORT = process.env.PORT || 3000;
 
 app.use(express.static(__dirname + '/front'));
 
@@ -20,9 +22,13 @@ app.get('/api/locations', (req, res) => {
     .on('data', (data) => results.push(data))
     .on('end', () => {
       res.json(results);
+    })
+    .on('error', (err) => {
+      console.error('Error reading CSV:', err);
+      res.status(500).send('Internal Server Error');
     });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });
